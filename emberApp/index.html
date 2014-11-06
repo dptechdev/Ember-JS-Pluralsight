@@ -41,12 +41,18 @@
         <p>This is the Github explorer for all of our favorite developers!</p>
         <ul>
 
-                <li><a href="#">Rob Conery</a></li>
-                <li><a href="#">Scott Hanselman</a></li>
-                <li><a href="#">Tom Dale</a></li>
-                <li><a href="#">Yehuda Katz</a></li>
+               {{#each dev in controller}}
+                <li>{{#link-to 'user' this}}{{dev.name}}{{/link-to}}</li>
+                {{/each}}
 
         </ul>
+
+
+
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="user">
+        <h3>{{name}}'s Github</h3>
     </script>
 
     </div>
@@ -60,9 +66,39 @@
   <!-- to activate the test runner, add the "?test" query string parameter -->
   <script src="tests/runner.js"></script>
 <script>
+
+    var devs = [
+        {login: "robconery", name: "Rob Conery"},
+        {login: "shanselman", name: "Scott Hanselman"},
+        {login: "tomdale", name: "Tom Dale"},
+        {login: "wycats", name: "Yehuda Katz"},
+        {login: "jongalloway", name: "Jon Galloway"},
+        {login: "haacked", name: "Phil Haack"},
+    ]
+
     window.Github = Ember.Application.create({
         rootElement : "#github-app"
     });
+
+    Github.IndexRoute = Ember.Route.extend({
+        model : function() {return devs}
+    });
+
+    Github.Router.map(function() {
+        this.resource("user", {path: "/users/:login"});
+    });
+
+    Github.UserRoute = Ember.Route.extend({
+        model: function(params) {
+
+            Ember.$.getJSON("https://api.github.com/users/" + params.login, function(data) {
+                return data;
+            });
+        }
+    });
+
+
+
 </script>
 
 
